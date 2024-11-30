@@ -51,5 +51,6 @@ defmodule AshGraphql.Test.Movie do
 
     has_many(:reviews, AshGraphql.Test.Review, public?: true)
     has_many(:awards, AshGraphql.Test.Award, public?: true)
+    has_one(:oscar_nomination, AshGraphql.Test.OscarNomination, public?: true)
   end
 end
