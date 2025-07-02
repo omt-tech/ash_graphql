@@ -266,6 +266,7 @@ defmodule AshGraphql do
                 existing_types =
                   case blueprint_with_subscriptions do
                     %{schema_definitions: [%{type_definitions: type_definitions}]} ->
+                      IO.puts "FOUND EXISTING TYPEDEFS"
                       type_definitions
 
                     _ ->
@@ -345,7 +346,7 @@ defmodule AshGraphql do
               end
 
             # Check for duplicates in type definitions
-            existing_identifiers = 
+            existing_identifiers =
               case blueprint_with_subscriptions.schema_definitions do
                 [%{type_definitions: existing_types} | _] ->
                   Enum.map(existing_types, & &1.identifier)
