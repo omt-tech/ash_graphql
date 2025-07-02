@@ -344,6 +344,42 @@ defmodule AshGraphql do
                 )
               end
 
+            # Check for duplicates in type definitions
+            existing_identifiers = 
+              case blueprint_with_subscriptions.schema_definitions do
+                [%{type_definitions: existing_types} | _] ->
+                  Enum.map(existing_types, & &1.identifier)
+                _ ->
+                  []
+              end
+
+            new_type_identifiers = Enum.map(type_definitions, & &1.identifier)
+            managed_rel_identifiers = Enum.map(managed_relationship_types, & &1.identifier)
+
+            # Check for duplicates within each list
+            check_internal_duplicates = fn list, name ->
+              duplicates = list -- Enum.uniq(list)
+              if duplicates != [] do
+                IO.puts("WARNING: Duplicates found within #{name}: #{inspect(Enum.uniq(duplicates))}")
+              end
+            end
+
+            check_internal_duplicates.(existing_identifiers, "existing schema_def.type_definitions")
+            check_internal_duplicates.(new_type_identifiers, "type_definitions")
+            check_internal_duplicates.(managed_rel_identifiers, "managed_relationship_types")
+
+            # Check for duplicates between lists
+            check_cross_duplicates = fn list1, list2, name1, name2 ->
+              duplicates = list1 -- (list1 -- list2)
+              if duplicates != [] do
+                IO.puts("WARNING: Duplicates found between #{name1} and #{name2}: #{inspect(Enum.uniq(duplicates))}")
+              end
+            end
+
+            check_cross_duplicates.(existing_identifiers, new_type_identifiers, "schema_def.type_definitions", "type_definitions")
+            check_cross_duplicates.(existing_identifiers, managed_rel_identifiers, "schema_def.type_definitions", "managed_relationship_types")
+            check_cross_duplicates.(new_type_identifiers, managed_rel_identifiers, "type_definitions", "managed_relationship_types")
+
             new_defs =
               List.update_at(blueprint_with_subscriptions.schema_definitions, 0, fn schema_def ->
                 %{
