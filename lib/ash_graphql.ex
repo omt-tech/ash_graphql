@@ -261,12 +261,17 @@ defmodule AshGraphql do
                 Process.get(:managed_relationship_requirements, []),
                 unquote(schema)
               )
+              |> tap(fn tap ->
+                IO.puts "pre uniq lenght: #{length(tap)}"
+              end)
               |> Enum.uniq_by(& &1.identifier)
+              |> tap(fn tap ->
+                IO.puts "post uniq lenght: #{length(tap)}"
+              end)
               |> Enum.reject(fn type ->
                 existing_types =
                   case blueprint_with_subscriptions do
                     %{schema_definitions: [%{type_definitions: type_definitions}]} ->
-                      IO.puts "FOUND EXISTING TYPEDEFS"
                       type_definitions
 
                     _ ->
