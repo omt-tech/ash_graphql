@@ -2142,7 +2142,7 @@ defmodule AshGraphql.Resource do
                 [{resource, action, field} | fields]
               end
             end)
-            |> Enum.sort_by(fn {_resource, _action, field} -> field.name end)
+            |> Enum.sort_by(fn {_resource, _action, field} -> field.identifier end)
 
           fields ++ new_fields
         end)
