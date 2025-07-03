@@ -121,7 +121,9 @@ defmodule AshGraphql do
           domain ->
             domain
         end)
-        |> Enum.map(fn domain -> {domain, Ash.Domain.Info.resources(domain), false} end)
+        |> Enum.map(fn domain ->
+          {domain, Ash.Domain.Info.resources(domain) |> Enum.sort(), false}
+        end)
         |> Enum.reduce({[], []}, fn {domain, resources, first?}, {acc, seen_resources} ->
           resources = Enum.reject(resources, &(&1 in seen_resources))
 
